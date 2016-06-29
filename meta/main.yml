@@ -2,7 +2,7 @@ galaxy_info:
   author: Anthony Landreth
   description: Install the latest Elixir from source on CentOS7
   company: Robophilosopher LLC
-  license: license (GPLv2, CC-BY, etc)
+  license: BSD
   min_ansible_version: 1.2
   platforms:
   - name: EL
