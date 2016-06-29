@@ -1,0 +1,46 @@
+---
+  - block:
+      - name: Install Erlang Dependencies
+        yum: pkg={{item}} state=latest
+        with_items:
+          - epel-release
+          - gcc
+          - gcc-c++
+          - glibc-devel
+          - make
+          - ncurses-devel
+          - openssl-devel
+          - autoconf
+          - java-1.8.0-openjdk-devel
+          - git
+
+      - name: Install wxBase.x86_64
+        yum: pkg=wxBase.x86_64
+
+      - name: Retrieve Erlang Solutions Repo Package
+        get_url: url=http://packages.erlang-solutions.com/erlang-solutions-1.0-1.noarch.rpm dest=/tmp/erlang-solutions-1.0-1.noarch.rpm
+
+      - name: Retrieve Erlang Solutions Repo
+        yum:
+           name: /tmp/erlang-solutions-1.0-1.noarch.rpm
+           state: present
+
+      - name: Install ESL-Erlang
+        yum: pkg=esl-erlang state=latest
+
+      - name: Clone Elixir
+        git: repo=https://github.com/elixir-lang/elixir.git dest=/opt/elixir
+
+      - name: Run "make" for Elixir
+        command: 'make chdir=/opt/elixir'
+        run_once: true
+
+      - name: Symlink to Elixir Binaries
+        file: src=/opt/elixir/bin/{{ item.src }} dest=/usr/local/bin/{{ item.dest }} state=link
+        with_items:
+          - { src: 'iex', dest: 'iex' }
+          - { src: 'mix', dest: 'mix' }
+          - { src: 'elixir', dest: 'elixir' }
+          - { src: 'elixirc', dest: 'elixirc' }
+    become: yes
+    become_method: sudo
